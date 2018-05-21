@@ -35,12 +35,14 @@ namespace CityInfo.API
             {
                 app.UseExceptionHandler();
             }
+            //This will handle the status pages when it's needed. 
+            app.UseStatusCodePages();
             /* We add this after the exception handler, so that middleware can potentially catch exceptions before
              handling the request over to MVC and, more importantly, handle exceptions and return the correct response
              when an exception happens in the MVC-related code we'll write.
              At this moment, MVC middleware will handle MVC requests */
             app.UseMvc();
-
+            
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("Hello World!");

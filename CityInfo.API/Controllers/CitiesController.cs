@@ -16,18 +16,29 @@ namespace CityInfo.API.Controllers
     public class CitiesController : Controller
     {
         /// <summary>
-        /// JsonResult class returns a JSONified version of whatever we pass into the constructor of JsonResult
+        /// JsonResult class returns a JSONified version of whatever we pass into the constructor of JsonResult, 
+        /// but returning an IActionResult gives us more flexibility so not always we return a JSON.
+        /// We don't have a 404 case here, because even the empty list is a valid result. 
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public JsonResult GetCities()
+        public IActionResult GetCities()
         {
-            return new JsonResult(CitiesDataStore.Current.Cities);
+            return Ok(CitiesDataStore.Current.Cities);
         }
         [HttpGet("{id}")]
-        public JsonResult Getcity(int id)
+        public IActionResult Getcity(int id)
         {
-            return new JsonResult(CitiesDataStore.Current.Cities.FirstOrDefault(x => x.Id == id));
+            /*
+             * If an exception happens, the server will return a 500 error automatically.
+             */
+            var cityToReturn = CitiesDataStore.Current.Cities.FirstOrDefault(x => x.Id == id);
+            if (cityToReturn == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cityToReturn);
         }
     }
 }

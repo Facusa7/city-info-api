@@ -22,7 +22,22 @@ namespace CityInfo.API
                 {
                     Id = 1,
                     Name = "Buenos Aires",
-                    Description = "The Paris of South America"
+                    Description = "The Paris of South America",
+                    PointsOfInterest = new List<PointsOfInterestDto>
+                    {
+                        new PointsOfInterestDto()
+                        {
+                            Id = 1,
+                            Name = "Obelisco",
+                            Description = "Big Obelisk in the city center"
+                        },
+                        new PointsOfInterestDto()
+                        {
+                            Id = 2,
+                            Name = "Pink House",
+                            Description = "The government house"
+                        }
+                    }
                 },
                 new CityDto()
                 {
