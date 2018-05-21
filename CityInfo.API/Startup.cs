@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 
 namespace CityInfo.API
 {
@@ -21,7 +23,24 @@ namespace CityInfo.API
         // and there're others that are built-in like the ApplicationBuilder and a Logger
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                //AddMvcOptions allows us to configure the supported formatters for our API. In this case, we add the XML output formatter.
+                //So, when a request with Accept:application/xml header is done, we can return a propper response. 
+                .AddMvcOptions(o => o.OutputFormatters.Add(
+                    new XmlDataContractSerializerOutputFormatter()));
+                /*
+                 * The AddJsonOptions it's used when we want to set up the way we serialize the properties on our classes.
+                 */
+                //.AddJsonOptions(o =>
+                //{
+                //    if (o.SerializerSettings.ContractResolver != null)
+                //    {
+                //        var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
+                //        //From this moment on, JSON.NET will simply take the property names as they are defined on our class. 
+                //        castedResolver.NamingStrategy = null; 
+                //    }
+                    
+                //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
