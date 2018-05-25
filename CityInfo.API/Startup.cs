@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
+using NLog.Extensions.Logging;
 
 namespace CityInfo.API
 {
@@ -16,6 +20,16 @@ namespace CityInfo.API
     /// </summary>
     public class Startup
     {
+        //Static configuration variable so we can use it application-wide
+        public static IConfiguration Configuration { get; private set; }
+        /// <summary>
+        /// In ASP.NET core 2, the CreateDefaultBuilder call on the WebHost in the Program class already sets up the configuration files.
+        /// </summary>
+        /// <param name="configuration"></param>
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         // What is a service in .NET Core? It's a component that is intended for common consumption in an application: There is framework services, like, Identity,
@@ -28,24 +42,39 @@ namespace CityInfo.API
                 //So, when a request with Accept:application/xml header is done, we can return a propper response. 
                 .AddMvcOptions(o => o.OutputFormatters.Add(
                     new XmlDataContractSerializerOutputFormatter()));
-                /*
-                 * The AddJsonOptions it's used when we want to set up the way we serialize the properties on our classes.
-                 */
-                //.AddJsonOptions(o =>
-                //{
-                //    if (o.SerializerSettings.ContractResolver != null)
-                //    {
-                //        var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
-                //        //From this moment on, JSON.NET will simply take the property names as they are defined on our class. 
-                //        castedResolver.NamingStrategy = null; 
-                //    }
-                    
-                //});
+            /*
+             * The AddJsonOptions it's used when we want to set up the way we serialize the properties on our classes.
+             */
+            //.AddJsonOptions(o =>
+            //{
+            //    if (o.SerializerSettings.ContractResolver != null)
+            //    {
+            //        var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
+            //        //From this moment on, JSON.NET will simply take the property names as they are defined on our class. 
+            //        castedResolver.NamingStrategy = null; 
+            //    }
+
+            //});
+
+            /* This type of services are created each time they are requested. This lifetime works best for lightweight stateless services. 
+             From this moment, an instance can be injected */
+
+#if DEBUG //These are compiler directives
+            services.AddTransient<IMailService, LocalMailService>();
+#else
+            services.AddTransient<IMailService, CloudMailService>();
+#endif
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            //ILoggerFactory is a built-in service which allows us to create different type of logging in our project. 
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+            loggerFactory.AddNLog();
+            //for other providers, you should add it like this: loggerFactory.AddProvider(new NLog.Extensions.Logging.NLogLoggerProvider());
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
