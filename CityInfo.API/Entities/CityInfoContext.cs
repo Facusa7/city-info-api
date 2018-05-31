@@ -7,7 +7,7 @@ namespace CityInfo.API.Entities
         public CityInfoContext(DbContextOptions<CityInfoContext> dbContextOptions) : base(dbContextOptions)
         {
             //this call would create the db if it didn't exist
-            Database.EnsureCreated();
+            Database.Migrate();
         }
         public DbSet<City> Cities { get; set; }
         public DbSet<PointOfInterest> PointsOfInterest { get; set; }

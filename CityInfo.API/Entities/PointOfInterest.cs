@@ -15,6 +15,8 @@ namespace CityInfo.API.Entities
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+        [MaxLength(200)]
+        public string Description { get; set; }
         /// <summary>
         /// This is a convention-based to point a foreign key. A property is considered a navigation one if
         /// the declaration here cannot be mapped as a scalar type by the current database provider. 
