@@ -68,10 +68,12 @@ namespace CityInfo.API
 #endif
             var connectionString = Startup.Configuration["connectionStrings:cityInfoDBConnectionString"];
             services.AddDbContext<CityInfoContext>(option => option.UseSqlServer(connectionString));
+            //Service that would be created once per request. 
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, CityInfoContext cityInfoContext)
         {
             //ILoggerFactory is a built-in service which allows us to create different type of logging in our project. 
             loggerFactory.AddConsole();
@@ -87,6 +89,8 @@ namespace CityInfo.API
             {
                 app.UseExceptionHandler();
             }
+
+            cityInfoContext.EnsureSeedDataForContext();
             //This will handle the status pages when it's needed. 
             app.UseStatusCodePages();
             /* We add this after the exception handler, so that middleware can potentially catch exceptions before
