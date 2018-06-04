@@ -44,5 +44,22 @@ namespace CityInfo.API.Services
         {
             return _context.PointsOfInterest.FirstOrDefault(p => p.CityId == cityId && p.Id == pointOfInterestId);
         }
+
+        public void AddPointOfInterestForCity(int cityId, PointOfInterest pointOfInterest)
+        {
+            var city = GetCity(cityId, false);
+            city.PointOfInterest.Add(pointOfInterest);
+        }
+
+        public bool Save()
+        {
+            //this returns the amounts of entities that has been changed.
+            return (_context.SaveChanges() >= 0);
+        }
+
+        public void DeletePointOfInterest(PointOfInterest pointOfInterest)
+        {
+            _context.PointsOfInterest.Remove(pointOfInterest);
+        }
     }
 }

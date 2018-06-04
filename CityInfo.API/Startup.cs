@@ -91,6 +91,18 @@ namespace CityInfo.API
             }
 
             cityInfoContext.EnsureSeedDataForContext();
+            //AutoMapper is convention based, it will map properties with the same name in the source and destination.
+            //By default, it will ignore NullReference Exceptions from source to target.
+            AutoMapper.Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<Entities.City, Models.CityWithoutPointsOfInterestDto>();
+                    cfg.CreateMap<Entities.City, Models.CityDto>();
+                    cfg.CreateMap<Entities.PointOfInterest, Models.PointsOfInterestDto>();
+                    cfg.CreateMap<Models.PointOfInterestForCreationDto, Entities.PointOfInterest>();
+                    cfg.CreateMap<Models.PointOfInterestForUpdateDto, Entities.PointOfInterest>();
+                    cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdateDto>();
+                });
+
             //This will handle the status pages when it's needed. 
             app.UseStatusCodePages();
             /* We add this after the exception handler, so that middleware can potentially catch exceptions before
